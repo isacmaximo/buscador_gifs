@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   String? _search;
 
   //vai representar a quantidade de páginas
-  int? _offset;
+  int _offset = 0;
 
   //função que vai fazer as requisições de busca dos gifs:
   //como não é instantâneo, usamos async:
@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     http.Response response;
     //no caso vai ter dois tipos de resposta: top gis e pesquisa
 
-    //se na pesquisa não estiver nada, então os top 20 gifs aparecerão:
+    //se na pesquisa não estiver nada, então os top gifs aparecerão:
     if (_search == null) {
       response = await http.get(Uri.parse(
           "https://api.giphy.com/v1/gifs/trending?api_key=qPx7EIu7Jk8dAwWIb57xNBHkO6QQcP7w&limit=20&rating=g"));
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     else {
       //parâmetros da busca: (q = _search) | (offset = _offset)
       response = await http.get(Uri.parse(
-          "https://api.giphy.com/v1/gifs/search?api_key=qPx7EIu7Jk8dAwWIb57xNBHkO6QQcP7w&q=$_search&limit=20&offset=$_offset&rating=g&lang=en"));
+          "https://api.giphy.com/v1/gifs/search?api_key=qPx7EIu7Jk8dAwWIb57xNBHkO6QQcP7w&q=$_search&limit=19&offset=$_offset&rating=g&lang=en"));
     }
 
     //precisamos requisitar o arquivo no formato json:
@@ -70,6 +70,16 @@ class _HomePageState extends State<HomePage> {
                     border: OutlineInputBorder()),
                 style: TextStyle(color: Colors.white, fontSize: 18.0),
                 textAlign: TextAlign.center,
+                //quando clicar no input (campo de pesquisa):
+                onSubmitted: (text){
+                  //para atualizar a tela que vai pesquisar:
+                  setState(() {
+                    _search = text;
+                    //offset vai para zero pois vai mostrar os primeiros ítens:
+                    _offset = 0;
+                  });
+
+                },
               )
           ),
 
@@ -113,6 +123,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+
+  int _getCount(List data){
+    //se no campo de pesquisa não tiver nada:
+    if(_search == null){
+      //retorna o tamanho:
+      return data.length;
+    }
+    else{
+      //vai somar a quantidade dew gifs + 1 para colocar o botão de carregar mais gifs
+      return data.length + 1;
+    }
+  }
+
   //grade de gifs:
 Widget _createGifTable(BuildContext context, AsyncSnapshot snapshot){
     //retornando um widget gridview
@@ -129,15 +152,40 @@ Widget _createGifTable(BuildContext context, AsyncSnapshot snapshot){
       mainAxisSpacing: 10.0,
     ),
 
-    itemCount: snapshot.data["data"].length,
+    //quantidade de gifs:
+    itemCount: _getCount(snapshot.data["data"]),
 
     itemBuilder: (context, index){
-      //aqui vai retornar o ítem que aparece em cada posição:
-      //gesture detector serve para interagir (dectecta se é tocado por exemplo)
-      return GestureDetector(
-        //imagem da internet que no caso vai ser o gif:
-        child: Image.network(snapshot.data["data"][index]["images"]["fixed_height"]["url"], height: 300.0, fit: BoxFit.cover,),
-      );
+      //se não estiver pesquisando, ou não for o último ítem:
+      if (_search == null || index < snapshot.data["data"].length){
+        //aqui vai retornar o ítem que aparece em cada posição:
+        //gesture detector serve para interagir (dectecta se é tocado por exemplo)
+        return GestureDetector(
+          //imagem da internet que no caso vai ser o gif:
+          child: Image.network(snapshot.data["data"][index]["images"]["fixed_height"]["url"], height: 300.0, fit: BoxFit.cover,),
+        );
+      }
+      //se estiver pesquisando:
+      else{
+        return Container(
+          child: GestureDetector(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                //ícone de adicionar (+)
+                Icon(Icons.add, color: Colors.white, size: 70.0,),
+                Text("Carregar mais...", style: TextStyle(color: Colors.white, fontSize: 22.0))
+              ],
+            ),
+            //ao clicar nesse botão:
+            onTap: (){
+              setState(() {
+                _offset += 19;
+              });
+            },
+          ),
+        );
+      }
 
     },
   );
