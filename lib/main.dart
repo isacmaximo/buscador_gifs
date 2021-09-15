@@ -17,10 +17,21 @@ import 'package:buscador_de_gifs/ui/home_page.dart';
 //função principal
 void main(){
   //material app:
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     //como o app vai ter mais de uma tela, então diferenciamos elas:
     //foi criado um diretório ui que contém a home page
     home: HomePage(),
+    //tema:
+    theme: ThemeData(
+      hintColor: Colors.white,
+      primaryColor: Colors.white,
+      inputDecorationTheme: InputDecorationTheme(
+        enabledBorder:
+        OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+        focusedBorder:
+        OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+        hintStyle: TextStyle(color: Colors.white),
+    )),
   ));
 }
 

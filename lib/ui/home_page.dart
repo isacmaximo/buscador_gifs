@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
     //no caso se for uma pesquisa:
     else{
       //parâmetros da busca: (q = _search) | (offset = _offset)
-      response = await http.get(Uri.parse("https://api.giphy.com/v1/gifs/search?api_key=qPx7EIu7Jk8dAwWIb57xNBHkO6QQcP7w&q=$_search&limit=20&offset=0&rating=g&lang=en"));
+      response = await http.get(Uri.parse("https://api.giphy.com/v1/gifs/search?api_key=qPx7EIu7Jk8dAwWIb57xNBHkO6QQcP7w&q=$_search&limit=20&offset=$_offset&rating=g&lang=en"));
     }
 
     //precisamos requisitar o arquivo no formato json:
@@ -47,6 +47,33 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      //Homepage Interface:
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        //o título do AppBar pode ser uma imagem também, não precisa ser um texto
+        //no caso vamos pegar uma imagem da internet:
+        title: Image.network("https://developers.giphy.com/branch/master/static/header-logo-8974b8ae658f704a5b48a2d039b8ad93.gif"),
+        centerTitle: true,
+      ),
+
+      //corpo da homepage:
+      backgroundColor: Colors.black,
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: TextField(
+                decoration: InputDecoration(
+                    labelText: "Pesquise Aqui!",
+                    labelStyle: TextStyle(color: Colors.white),
+                    border: OutlineInputBorder()
+                ),
+                style: TextStyle(color: Colors.white,fontSize: 18.0),
+                textAlign: TextAlign.center,
+          ))
+        ],
+      ),
+    );
   }
 }
