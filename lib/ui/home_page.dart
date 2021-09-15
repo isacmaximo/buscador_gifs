@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:share/share.dart';
+
 //stateful:
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -168,6 +170,10 @@ Widget _createGifTable(BuildContext context, AsyncSnapshot snapshot){
           onTap: (){
             //o navigator vai levá-lo a uma rota de ou página (arquivo)
             Navigator.push(context, MaterialPageRoute(builder: (context) => GifPage(snapshot.data["data"][index])));
+          },
+          //vamos também adicionar ao gesture detect a ação de compartilhar quando estivermos segurando o gif
+          onLongPress: (){
+            Share.share(snapshot.data["data"][index]["images"]["fixed_height"]["url"]);
           },
         );
       }
