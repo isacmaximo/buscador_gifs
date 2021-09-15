@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:transparent_image/transparent_image.dart';
 import 'package:share/share.dart';
 
 //stateful:
@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     //no caso vai ter dois tipos de resposta: top gis e pesquisa
 
     //se na pesquisa não estiver nada, então os top gifs aparecerão:
-    if (_search == null) {
+    if(_search == null || _search!.isEmpty){
       response = await http.get(Uri.parse(
           "https://api.giphy.com/v1/gifs/trending?api_key=qPx7EIu7Jk8dAwWIb57xNBHkO6QQcP7w&limit=20&rating=g"));
     }
@@ -165,7 +165,15 @@ Widget _createGifTable(BuildContext context, AsyncSnapshot snapshot){
         //gesture detector serve para interagir (dectecta se é tocado por exemplo)
         return GestureDetector(
           //imagem da internet que no caso vai ser o gif:
-          child: Image.network(snapshot.data["data"][index]["images"]["fixed_height"]["url"], height: 300.0, fit: BoxFit.cover,),
+          //no lugar de Image.network podemos usar algo que dá um fade:
+          child: FadeInImage.memoryNetwork(
+              //placeholder vai ser uma imagem que vamos usar no lugar da imagem enquanto carrega
+              //usaremos uma imagem transparente, que pode ser utilizada pelo plug-in: transparente_image: "^0.1.0"
+
+              placeholder: kTransparentImage,
+              image: snapshot.data["data"][index]["images"]["fixed_height"]["url"], height: 300.0, fit: BoxFit.cover,
+          ),
+
           //se clicar no gif:
           onTap: (){
             //o navigator vai levá-lo a uma rota de ou página (arquivo)
